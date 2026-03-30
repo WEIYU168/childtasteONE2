@@ -298,60 +298,46 @@
         
         <!-- 失敗哭臉插圖 SVG (可愛版) -->
         <svg id="fail-illustration" class="result-illustration" viewBox="0 0 100 100">
-            <!-- 身體 -->
             <path d="M 30,95 Q 50,75 70,95 Z" fill="#7f8c8d"/>
             <circle cx="50" cy="50" r="40" fill="#f5d0a9" stroke="#8b4513" stroke-width="2"/>
-            <!-- 髮型 -->
             <path d="M 10,45 Q 50,-5 90,45" fill="#111"/>
             <path d="M 40,10 Q 50,0 60,10" fill="#111"/>
             <circle cx="15" cy="30" r="8" fill="#111"/>
             <circle cx="85" cy="30" r="8" fill="#111"/>
-            <!-- 哭眼 -->
             <path d="M 25,45 Q 32,40 40,50" stroke="#111" stroke-width="3" stroke-linecap="round" fill="none"/>
             <path d="M 75,45 Q 68,40 60,50" stroke="#111" stroke-width="3" stroke-linecap="round" fill="none"/>
             <path d="M 25,60 L 32,55 L 40,60" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             <path d="M 75,60 L 68,55 L 60,60" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <!-- 淚瀑布 -->
             <path d="M 32,62 C 32,75 25,90 25,100 C 40,100 38,75 38,62 Z" fill="#87ceeb" opacity="0.8"/>
             <path d="M 68,62 C 68,75 75,90 75,100 C 60,100 62,75 62,62 Z" fill="#87ceeb" opacity="0.8"/>
-            <!-- 嘴巴 -->
             <path d="M 40,75 Q 50,65 60,75 Q 60,85 50,85 Q 40,85 40,75 Z" fill="#8b0000"/>
             <path d="M 45,80 Q 50,75 55,80 Z" fill="#ff6b6b"/>
         </svg>
 
         <!-- 勝利正義男孩插圖 SVG (可愛版) -->
         <svg id="success-illustration" class="result-illustration" viewBox="0 0 100 100">
-            <!-- 身體(青衫) -->
             <path d="M 20,95 Q 50,60 80,95 Z" fill="#4CAF50"/>
-            <!-- 勝利手勢 -->
             <path d="M 25,85 L 15,55" stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
             <circle cx="15" cy="55" r="8" fill="#f5d0a9" stroke="#8b4513" stroke-width="1.5"/>
             <path d="M 75,85 L 85,55" stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
             <circle cx="85" cy="55" r="8" fill="#f5d0a9" stroke="#8b4513" stroke-width="1.5"/>
-            <!-- 頭部 -->
             <circle cx="50" cy="45" r="38" fill="#f5d0a9" stroke="#8b4513" stroke-width="2"/>
-            <!-- 精神的髮型 -->
             <path d="M 12,40 Q 50,-10 88,40" fill="#111"/>
             <circle cx="20" cy="15" r="10" fill="#111"/>
             <circle cx="80" cy="15" r="10" fill="#111"/>
             <path d="M 20,15 L 15,5 M 20,15 L 25,5" stroke="#111" stroke-width="3" stroke-linecap="round"/>
             <path d="M 80,15 L 75,5 M 80,15 L 85,5" stroke="#111" stroke-width="3" stroke-linecap="round"/>
-            <!-- 自信眉毛 -->
             <path d="M 25,35 L 42,42" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
             <path d="M 75,35 L 58,42" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
-            <!-- 閃亮大眼 -->
             <circle cx="32" cy="52" r="7" fill="#111"/>
             <circle cx="34" cy="49" r="2.5" fill="white"/>
             <circle cx="29" cy="54" r="1" fill="white"/>
             <circle cx="68" cy="52" r="7" fill="#111"/>
             <circle cx="70" cy="49" r="2.5" fill="white"/>
             <circle cx="65" cy="54" r="1" fill="white"/>
-            <!-- 自信笑容 -->
             <path d="M 42,65 Q 50,75 58,65 Z" fill="#e74c3c"/>
-            <!-- 臉頰紅暈 -->
             <ellipse cx="22" cy="60" rx="5" ry="3" fill="#ff8a80" opacity="0.7"/>
             <ellipse cx="78" cy="60" rx="5" ry="3" fill="#ff8a80" opacity="0.7"/>
-            <!-- 閃耀星星 -->
             <path d="M 10,20 L 12,15 L 17,13 L 12,11 L 10,6 L 8,11 L 3,13 L 8,15 Z" fill="#FFD700"/>
             <path d="M 90,35 L 92,30 L 97,28 L 92,26 L 90,21 L 88,26 L 83,28 L 88,30 Z" fill="#FFD700"/>
         </svg>
@@ -422,7 +408,34 @@
         let warningTimer = 0;
         let damageMultiplier = 1; 
 
+        // 音效與背景音樂系統
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const bgmNormal = new Audio('背景音樂.mp3');
+        bgmNormal.loop = true;
+        const bgmBoss = new Audio('魔王出現.mp3');
+        bgmBoss.loop = true;
+        let currentBGM = 'none';
+
+        function switchBGM(type) {
+            if (currentBGM === type) return;
+            currentBGM = type;
+
+            if (type === 'normal') {
+                bgmBoss.pause();
+                bgmBoss.currentTime = 0;
+                bgmNormal.play().catch(e => console.log("BGM播放失敗:", e));
+            } else if (type === 'boss') {
+                bgmNormal.pause();
+                bgmBoss.play().catch(e => console.log("Boss BGM播放失敗:", e));
+            } else if (type === 'stop') {
+                bgmNormal.pause();
+                bgmBoss.pause();
+                bgmNormal.currentTime = 0;
+                bgmBoss.currentTime = 0;
+            }
+        }
+
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             
@@ -674,140 +687,51 @@
                     ctx.save(); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.font = "bold 16px KaiTi"; ctx.textAlign = "center"; ctx.shadowColor = "black"; ctx.shadowBlur = 4; ctx.fillText("媽媽出現", 0, -80); ctx.restore();
                 }
                 
-                // 陰影
                 ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.beginPath(); ctx.ellipse(0, 70, 30, 8, 0, 0, Math.PI*2); ctx.fill();
                 
-                const robeColor = "#7ab8cc"; 
-                const trimColor = "#fff"; 
-                const skinColor = "#ffe0c2";
+                const robeColor = "#7ab8cc"; const trimColor = "#fff"; const skinColor = "#ffe0c2";
                 
                 if (!this.hit) {
-                    // 和藹可親可愛版
-                    ctx.fillStyle = robeColor;
-                    ctx.beginPath();
-                    ctx.moveTo(-15, -20);
-                    ctx.quadraticCurveTo(-30, 40, -35, 70);
-                    ctx.lineTo(35, 70);
-                    ctx.quadraticCurveTo(30, 40, 15, -20);
-                    ctx.fill();
-                    
-                    ctx.strokeStyle = trimColor; ctx.lineWidth = 4; ctx.lineJoin = "round";
-                    ctx.beginPath(); ctx.moveTo(-12, -20); ctx.lineTo(0, 0); ctx.lineTo(12, -20); ctx.stroke();
-
-                    // 雙手交疊 (可愛袖子)
-                    ctx.fillStyle = "#65a0b5";
-                    ctx.beginPath(); ctx.ellipse(0, 20, 22, 12, 0, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = trimColor; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.ellipse(0, 20, 22, 12, 0, 0, Math.PI*2); ctx.stroke();
-                    
-                    // 可愛圓頭
-                    ctx.fillStyle = skinColor;
-                    ctx.beginPath(); ctx.arc(0, -40, 22, 0, Math.PI*2); ctx.fill();
-                    
-                    // 髮型
-                    ctx.fillStyle = "#111";
-                    ctx.beginPath(); ctx.arc(0, -45, 23, Math.PI, Math.PI*2); ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(-35, -55); ctx.quadraticCurveTo(0, -80, 35, -55);
-                    ctx.quadraticCurveTo(30, -45, 0, -50); ctx.quadraticCurveTo(-30, -45, -35, -55);
-                    ctx.fill();
-                    
+                    ctx.fillStyle = robeColor; ctx.beginPath(); ctx.moveTo(-15, -20); ctx.quadraticCurveTo(-30, 40, -35, 70); ctx.lineTo(35, 70); ctx.quadraticCurveTo(30, 40, 15, -20); ctx.fill();
+                    ctx.strokeStyle = trimColor; ctx.lineWidth = 4; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(-12, -20); ctx.lineTo(0, 0); ctx.lineTo(12, -20); ctx.stroke();
+                    ctx.fillStyle = "#65a0b5"; ctx.beginPath(); ctx.ellipse(0, 20, 22, 12, 0, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = trimColor; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 20, 22, 12, 0, 0, Math.PI*2); ctx.stroke();
+                    ctx.fillStyle = skinColor; ctx.beginPath(); ctx.arc(0, -40, 22, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(0, -45, 23, Math.PI, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(-35, -55); ctx.quadraticCurveTo(0, -80, 35, -55); ctx.quadraticCurveTo(30, -45, 0, -50); ctx.quadraticCurveTo(-30, -45, -35, -55); ctx.fill();
                     ctx.fillStyle = "#e74c3c"; ctx.beginPath(); ctx.arc(0, -60, 7, 0, Math.PI*2); ctx.fill();
                     ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(0, -60, 3, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = "#e74c3c"; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(-25, -53); ctx.lineTo(-25, -35); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(25, -53); ctx.lineTo(25, -35); ctx.stroke();
-                    ctx.fillStyle = "#f1c40f";
-                    ctx.beginPath(); ctx.arc(-25, -35, 3, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(25, -35, 3, 0, Math.PI*2); ctx.fill();
-
-                    // 臉部特徵
-                    ctx.fillStyle = "rgba(255, 100, 100, 0.4)";
-                    ctx.beginPath(); ctx.arc(-12, -35, 5, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(12, -35, 5, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = "#4a2a18"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
-                    ctx.beginPath(); ctx.arc(-10, -40, 5, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
-                    ctx.beginPath(); ctx.arc(10, -40, 5, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
-                    ctx.lineWidth = 1.5;
-                    ctx.beginPath(); ctx.moveTo(-15, -42); ctx.lineTo(-18, -40); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(15, -42); ctx.lineTo(18, -40); ctx.stroke();
+                    ctx.strokeStyle = "#e74c3c"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-25, -53); ctx.lineTo(-25, -35); ctx.stroke(); ctx.beginPath(); ctx.moveTo(25, -53); ctx.lineTo(25, -35); ctx.stroke();
+                    ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(-25, -35, 3, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(25, -35, 3, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "rgba(255, 100, 100, 0.4)"; ctx.beginPath(); ctx.arc(-12, -35, 5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(12, -35, 5, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = "#4a2a18"; ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(-10, -40, 5, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); ctx.beginPath(); ctx.arc(10, -40, 5, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+                    ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-15, -42); ctx.lineTo(-18, -40); ctx.stroke(); ctx.beginPath(); ctx.moveTo(15, -42); ctx.lineTo(18, -40); ctx.stroke();
                     ctx.beginPath(); ctx.arc(0, -30, 3, 0, Math.PI); ctx.stroke();
-                    
                 } else {
-                    // 勃然大怒 (Furious)
                     ctx.fillStyle = `rgba(255, 50, 0, ${0.4 + Math.sin(frameCount*0.2)*0.2})`;
                     ctx.beginPath();
                     for(let i=0; i<12; i++) {
-                        let angle = (i/12) * Math.PI * 2 + frameCount * 0.05;
-                        let r = 40 + Math.random()*15;
-                        ctx.lineTo(Math.cos(angle)*r, -40 + Math.sin(angle)*r);
+                        let angle = (i/12) * Math.PI * 2 + frameCount * 0.05; let r = 40 + Math.random()*15; ctx.lineTo(Math.cos(angle)*r, -40 + Math.sin(angle)*r);
                     }
-                    ctx.closePath();
-                    ctx.fill();
-
-                    ctx.fillStyle = robeColor;
-                    ctx.beginPath();
-                    ctx.moveTo(-15, -20);
-                    ctx.quadraticCurveTo(-35, 40, -40, 70);
-                    ctx.lineTo(40, 70);
-                    ctx.quadraticCurveTo(35, 40, 15, -20);
-                    ctx.fill();
-                    
-                    ctx.fillStyle = "#65a0b5";
-                    ctx.beginPath(); ctx.moveTo(-15, -15); ctx.quadraticCurveTo(-40, -30, -45, -50); ctx.lineTo(-25, -60); ctx.quadraticCurveTo(-15, -40, -5, -20); ctx.fill();
+                    ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = robeColor; ctx.beginPath(); ctx.moveTo(-15, -20); ctx.quadraticCurveTo(-35, 40, -40, 70); ctx.lineTo(40, 70); ctx.quadraticCurveTo(35, 40, 15, -20); ctx.fill();
+                    ctx.fillStyle = "#65a0b5"; ctx.beginPath(); ctx.moveTo(-15, -15); ctx.quadraticCurveTo(-40, -30, -45, -50); ctx.lineTo(-25, -60); ctx.quadraticCurveTo(-15, -40, -5, -20); ctx.fill();
                     ctx.beginPath(); ctx.moveTo(15, -15); ctx.quadraticCurveTo(40, -30, 45, -50); ctx.lineTo(25, -60); ctx.quadraticCurveTo(15, -40, 5, -20); ctx.fill();
-                    
-                    ctx.fillStyle = skinColor;
-                    ctx.beginPath(); ctx.arc(-35, -55, 8, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(35, -55, 8, 0, Math.PI*2); ctx.fill();
-
-                    ctx.save();
-                    ctx.translate((Math.random()-0.5)*2, (Math.random()-0.5)*2);
-                    
-                    ctx.fillStyle = skinColor;
-                    ctx.beginPath(); ctx.arc(0, -40, 22, 0, Math.PI*2); ctx.fill();
-                    
-                    ctx.fillStyle = "#111";
-                    ctx.beginPath(); ctx.arc(0, -45, 23, Math.PI, Math.PI*2); ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(-35, -55); ctx.quadraticCurveTo(0, -80, 35, -55);
-                    ctx.quadraticCurveTo(30, -45, 0, -50); ctx.quadraticCurveTo(-30, -45, -35, -55);
-                    ctx.fill();
+                    ctx.fillStyle = skinColor; ctx.beginPath(); ctx.arc(-35, -55, 8, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(35, -55, 8, 0, Math.PI*2); ctx.fill();
+                    ctx.save(); ctx.translate((Math.random()-0.5)*2, (Math.random()-0.5)*2);
+                    ctx.fillStyle = skinColor; ctx.beginPath(); ctx.arc(0, -40, 22, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(0, -45, 23, Math.PI, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(-35, -55); ctx.quadraticCurveTo(0, -80, 35, -55); ctx.quadraticCurveTo(30, -45, 0, -50); ctx.quadraticCurveTo(-30, -45, -35, -55); ctx.fill();
                     ctx.fillStyle = "#e74c3c"; ctx.beginPath(); ctx.arc(0, -60, 7, 0, Math.PI*2); ctx.fill();
                     ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(0, -60, 3, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = "#e74c3c"; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(-25, -53); ctx.lineTo(-25, -35); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(25, -53); ctx.lineTo(25, -35); ctx.stroke();
-                    ctx.fillStyle = "#f1c40f";
-                    ctx.beginPath(); ctx.arc(-25, -35, 3, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(25, -35, 3, 0, Math.PI*2); ctx.fill();
-
-                    ctx.strokeStyle = "#111"; ctx.lineWidth = 3.5; ctx.lineCap = "round";
-                    ctx.beginPath(); ctx.moveTo(-18, -48); ctx.lineTo(-5, -42); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(18, -48); ctx.lineTo(5, -42); ctx.stroke();
-                    
-                    ctx.fillStyle = "#fff";
-                    ctx.beginPath(); ctx.arc(-10, -38, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                    ctx.beginPath(); ctx.arc(10, -38, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                    ctx.fillStyle = "#e74c3c"; 
-                    ctx.beginPath(); ctx.arc(-10, -38, 2.5, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(10, -38, 2.5, 0, Math.PI*2); ctx.fill();
-                    
-                    ctx.fillStyle = "#600";
-                    ctx.beginPath(); ctx.ellipse(0, -25, 8, 10, 0, 0, Math.PI*2); ctx.fill();
-                    ctx.fillStyle = "#fff";
-                    ctx.beginPath(); ctx.moveTo(-6, -30); ctx.lineTo(-3, -25); ctx.lineTo(0, -30); ctx.lineTo(3, -25); ctx.lineTo(6, -30); ctx.fill();
-                    ctx.beginPath(); ctx.moveTo(-6, -20); ctx.lineTo(-3, -24); ctx.lineTo(0, -20); ctx.lineTo(3, -24); ctx.lineTo(6, -20); ctx.fill();
-                    
-                    ctx.strokeStyle = "#d00"; ctx.lineWidth = 2.5;
-                    const signX = 22, signY = -55;
-                    ctx.beginPath();
-                    ctx.moveTo(signX-5, signY-5); ctx.quadraticCurveTo(signX, signY, signX-5, signY+5);
-                    ctx.moveTo(signX+5, signY-5); ctx.quadraticCurveTo(signX, signY, signX+5, signY+5);
-                    ctx.moveTo(signX-5, signY-5); ctx.quadraticCurveTo(signX, signY, signX+5, signY-5);
-                    ctx.moveTo(signX-5, signY+5); ctx.quadraticCurveTo(signX, signY, signX+5, signY+5);
-                    ctx.stroke();
-
+                    ctx.strokeStyle = "#e74c3c"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-25, -53); ctx.lineTo(-25, -35); ctx.stroke(); ctx.beginPath(); ctx.moveTo(25, -53); ctx.lineTo(25, -35); ctx.stroke();
+                    ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(-25, -35, 3, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(25, -35, 3, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = "#111"; ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(-18, -48); ctx.lineTo(-5, -42); ctx.stroke(); ctx.beginPath(); ctx.moveTo(18, -48); ctx.lineTo(5, -42); ctx.stroke();
+                    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-10, -38, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.arc(10, -38, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#e74c3c"; ctx.beginPath(); ctx.arc(-10, -38, 2.5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(10, -38, 2.5, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#600"; ctx.beginPath(); ctx.ellipse(0, -25, 8, 10, 0, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-6, -30); ctx.lineTo(-3, -25); ctx.lineTo(0, -30); ctx.lineTo(3, -25); ctx.lineTo(6, -30); ctx.fill(); ctx.beginPath(); ctx.moveTo(-6, -20); ctx.lineTo(-3, -24); ctx.lineTo(0, -20); ctx.lineTo(3, -24); ctx.lineTo(6, -20); ctx.fill();
+                    ctx.strokeStyle = "#d00"; ctx.lineWidth = 2.5; const signX = 22, signY = -55; ctx.beginPath(); ctx.moveTo(signX-5, signY-5); ctx.quadraticCurveTo(signX, signY, signX-5, signY+5); ctx.moveTo(signX+5, signY-5); ctx.quadraticCurveTo(signX, signY, signX+5, signY+5); ctx.moveTo(signX-5, signY-5); ctx.quadraticCurveTo(signX, signY, signX+5, signY-5); ctx.moveTo(signX-5, signY+5); ctx.quadraticCurveTo(signX, signY, signX+5, signY+5); ctx.stroke();
                     ctx.restore();
                 }
                 ctx.restore();
@@ -866,46 +790,21 @@
 
         class Firework {
             constructor(x, y, color) {
-                this.x = x; this.y = y; this.color = color;
-                this.particles = [];
+                this.x = x; this.y = y; this.color = color; this.particles = [];
                 for(let i=0; i<30; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 5 + 2;
-                    this.particles.push({
-                        x: 0, y: 0,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed,
-                        life: 1.0,
-                        decay: Math.random() * 0.02 + 0.01
-                    });
+                    const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 5 + 2;
+                    this.particles.push({ x: 0, y: 0, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1.0, decay: Math.random() * 0.02 + 0.01 });
                 }
             }
-            update() {
-                this.particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; // gravity
-                    p.life -= p.decay;
-                });
-                this.particles = this.particles.filter(p => p.life > 0);
-            }
-            draw(ctx) {
-                ctx.save(); ctx.translate(this.x, this.y);
-                this.particles.forEach(p => {
-                    ctx.globalAlpha = p.life; ctx.fillStyle = this.color;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-                });
-                ctx.restore();
-            }
+            update() { this.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life -= p.decay; }); this.particles = this.particles.filter(p => p.life > 0); }
+            draw(ctx) { ctx.save(); ctx.translate(this.x, this.y); this.particles.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill(); }); ctx.restore(); }
         }
 
         class BossToad {
             constructor(config) {
-                this.name = config.name;
-                this.baseX = width * 0.8; this.baseY = height * 0.8;
-                this.x = width + 200; this.y = this.baseY;
-                this.state = 'idle'; this.timer = 0; this.grasshoppers = [];
-                this.health = config.hp; this.maxHealth = config.hp;
-                this.baseScale = config.scale; this.scale = config.scale;
-                this.speed = config.speed; this.scoreReward = config.score;
+                this.name = config.name; this.baseX = width * 0.8; this.baseY = height * 0.8; this.x = width + 200; this.y = this.baseY;
+                this.state = 'idle'; this.timer = 0; this.grasshoppers = []; this.health = config.hp; this.maxHealth = config.hp;
+                this.baseScale = config.scale; this.scale = config.scale; this.speed = config.speed; this.scoreReward = config.score;
                 this.dizzyAngle = 0; this.whipEffects = [];
             }
             startEvent() {
@@ -922,6 +821,7 @@
                         this.state = 'warning';
                         this.timer = 120; // 2秒警示
                         playSound('warning');
+                        switchBGM('boss'); // 改為在警戒畫面時才切換魔王音樂
                     }
                 } else if (this.state === 'warning') {
                     this.timer--;
@@ -945,54 +845,24 @@
                     isBoyCrying = false; this.x += 15; this.y -= 5; this.dizzyAngle += 0.2;
                     if (this.x > width + 300) {
                         this.state = 'done'; addScore(this.scoreReward, width/2, height/2, "驅之別院 +" + this.scoreReward, "#00008B");
-                        boss = null; triggerNextBoss();
+                        boss = null; switchBGM('normal'); setTimeout(() => { if(gameRunning && !boss) triggerNextBoss(); }, 3000); 
                     }
                 }
             }
             takeDamage() {
                 if (this.state !== 'battling') return;
-                
-                let damage = 100 * damageMultiplier;
-                let points = 50 * damageMultiplier;
-
-                if (damageMultiplier > 1) { 
-                    this.whipEffects.push(new WhipEffect(0, -30)); 
-                    playSound('whip'); 
-                } else { 
-                    playSound('hit'); 
-                }
-                
-                this.health -= damage;
-                this.scale = this.baseScale * 0.9; 
+                let damage = 100 * damageMultiplier; let points = 50 * damageMultiplier;
+                if (damageMultiplier > 1) { this.whipEffects.push(new WhipEffect(0, -30)); playSound('whip'); } else { playSound('hit'); }
+                this.health -= damage; this.scale = this.baseScale * 0.9; 
                 addScore(points, this.x + (Math.random()-0.5)*50, this.y - 80, "+" + points, "#00008B");
-                
-                if (this.health <= 0) {
-                    this.state = 'leaving';
-                }
+                if (this.health <= 0) this.state = 'leaving';
             }
             draw(ctx) {
                 if (this.state === 'idle' || this.state === 'done') return;
-                
-                if (this.state === 'grasshopper_fight') {
-                    ctx.save(); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.font = "bold 24px KaiTi"; ctx.textAlign = "center"; ctx.shadowColor = "black"; ctx.shadowBlur = 4;
-                    ctx.fillText("二蟲鬥草間", this.baseX, this.baseY - 60); ctx.restore();
-                }
-
-                if (this.state === 'warning') {
-                    ctx.save();
-                    ctx.fillStyle = `rgba(255, 0, 0, ${0.3 + Math.sin(frameCount * 0.5) * 0.2})`;
-                    ctx.fillRect(0, 0, width, height); 
-                    ctx.fillStyle = "red";
-                    ctx.font = "bold 48px KaiTi";
-                    ctx.textAlign = "center";
-                    ctx.shadowColor = "white"; ctx.shadowBlur = 10;
-                    ctx.fillText("危險！龐然大物接近中！", width/2, height/2);
-                    ctx.restore();
-                }
-
+                if (this.state === 'grasshopper_fight') { ctx.save(); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.font = "bold 24px KaiTi"; ctx.textAlign = "center"; ctx.shadowColor = "black"; ctx.shadowBlur = 4; ctx.fillText("二蟲鬥草間", this.baseX, this.baseY - 60); ctx.restore(); }
+                if (this.state === 'warning') { ctx.save(); ctx.fillStyle = `rgba(255, 0, 0, ${0.3 + Math.sin(frameCount * 0.5) * 0.2})`; ctx.fillRect(0, 0, width, height); ctx.fillStyle = "red"; ctx.font = "bold 48px KaiTi"; ctx.textAlign = "center"; ctx.shadowColor = "white"; ctx.shadowBlur = 10; ctx.fillText("危險！龐然大物接近中！", width/2, height/2); ctx.restore(); }
                 if (this.state !== 'grasshopper_fight' && this.state !== 'warning') {
-                    ctx.save(); ctx.translate(this.x, this.y); if (this.state === 'leaving') ctx.rotate(this.dizzyAngle);
-                    ctx.scale(this.scale * 2.2, this.scale * 2.2);
+                    ctx.save(); ctx.translate(this.x, this.y); if (this.state === 'leaving') ctx.rotate(this.dizzyAngle); ctx.scale(this.scale * 2.2, this.scale * 2.2);
                     const skinBase = "#6b7c4b"; const skinDark = "#3f4d2a"; const bellyColor = "#dcd8bc";
                     ctx.fillStyle = skinBase; ctx.strokeStyle = skinDark; ctx.lineWidth = 1;
                     ctx.beginPath(); ctx.ellipse(-35, 10, 15, 25, -Math.PI/4, 0, Math.PI*2); ctx.fill(); ctx.stroke();
@@ -1012,10 +882,7 @@
                     if (this.state === 'battling') { ctx.fillStyle = "red"; ctx.fillRect(-30, -50, 60, 5); ctx.fillStyle = "#0f0"; ctx.fillRect(-30, -50, 60 * (this.health / this.maxHealth), 5); ctx.strokeStyle = "black"; ctx.lineWidth = 1; ctx.strokeRect(-30, -50, 60, 5); }
                     ctx.restore();
                 }
-                
-                if (this.grasshoppers.length > 0 && (this.state === 'grasshopper_fight' || this.state === 'warning' || this.state === 'entering' || this.state === 'eating')) {
-                    this.grasshoppers.forEach(g => g.draw(ctx, frameCount));
-                }
+                if (this.grasshoppers.length > 0 && (this.state === 'grasshopper_fight' || this.state === 'warning' || this.state === 'entering' || this.state === 'eating')) { this.grasshoppers.forEach(g => g.draw(ctx, frameCount)); }
             }
         }
 
@@ -1040,13 +907,9 @@
                 boss.startEvent(); 
                 return;
             }
-
             if (bossWaveIndex === 3) {
-                if (damageMultiplier === 1 && !cane) {
-                    cane = new CaneItem();
-                }
+                if (damageMultiplier === 1 && !cane) { cane = new CaneItem(); }
             }
-            
             let config = bossLevels[bossWaveIndex];
             bossWaveIndex++;
             boss = new BossToad(config);
@@ -1054,7 +917,6 @@
         }
 
         const LOCAL_STORAGE_KEY = 'childhood_game_scores';
-
         function saveScore(name, score) {
             let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
             scores.push({ name: name, score: score, date: new Date().toLocaleDateString() });
@@ -1067,27 +929,20 @@
         function renderLeaderboard() {
             let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
             let html = '<tr><th>名次</th><th>姓名</th><th>分數</th></tr>';
-            scores.forEach((s, index) => {
-                html += `<tr><td>${index + 1}</td><td>${s.name}</td><td>${s.score}</td></tr>`;
-            });
+            scores.forEach((s, index) => { html += `<tr><td>${index + 1}</td><td>${s.name}</td><td>${s.score}</td></tr>`; });
             if(scores.length === 0) html += '<tr><td colspan="3">暫無紀錄</td></tr>';
             leaderboardTable.innerHTML = html;
         }
 
         submitScoreBtn.addEventListener('click', () => {
             const name = playerNameInput.value.trim();
-            if (name) {
-                saveScore(name, score);
-                inputSection.style.display = 'none'; 
-            }
+            if (name) { saveScore(name, score); inputSection.style.display = 'none'; }
         });
 
         function handleInputStart(x, y) {
             if (!gameRunning) return; 
             isMouseDown = true; mouseX = x; mouseY = y;
-
             if (cane && cane.checkClick(x, y)) { return; }
-
             if (boss && boss.state === 'battling') {
                 const dx = x - boss.x; const dy = y - boss.y;
                 if (Math.sqrt(dx*dx + dy*dy) < 120 * boss.scale) { boss.takeDamage(); return; }
@@ -1098,7 +953,6 @@
 
         function handleInputMove(x, y) { mouseX = x; mouseY = y; }
         function handleInputEnd() { isMouseDown = false; }
-
         canvas.addEventListener('mousedown', e => handleInputStart(e.clientX, e.clientY));
         canvas.addEventListener('mousemove', e => handleInputMove(e.clientX, e.clientY));
         canvas.addEventListener('mouseup', handleInputEnd);
@@ -1111,16 +965,9 @@
         function spawnMosquito() { if (mosquitoes.length < 5 || (Math.random() < 0.02 && mosquitoes.length < 15)) { mosquitoes.push(new Mosquito()); } }
         function spawnMom() { if (moms.length === 0 && Math.random() < 0.002) { moms.push(new Mom()); } }
         function addScore(val, x, y, textOverride, colorOverride) { 
-            score += val; 
-            scoreEl.innerText = score; 
-            let color = colorOverride || '#2ecc71'; 
-            if (!colorOverride) {
-                if (val <= -100) color = '#8b0000'; 
-                else if (val < 0) color = '#e74c3c'; 
-            }
-            const sign = val > 0 ? '+' : ''; 
-            const text = textOverride ? textOverride : (sign + val); 
-            particles.push(new ScoreText(text, x, y, color)); 
+            score += val; scoreEl.innerText = score; let color = colorOverride || '#2ecc71'; 
+            if (!colorOverride) { if (val <= -100) color = '#8b0000'; else if (val < 0) color = '#e74c3c'; }
+            const sign = val > 0 ? '+' : ''; const text = textOverride ? textOverride : (sign + val); particles.push(new ScoreText(text, x, y, color)); 
         }
 
         function checkCollisions() {
@@ -1133,6 +980,7 @@
 
         function endGame(isFail = false) {
             gameRunning = false;
+            switchBGM('stop');
             finalScoreEl.innerText = score;
             gameOverScreen.style.display = 'flex';
             inputSection.style.display = 'block'; 
@@ -1152,7 +1000,6 @@
                 gameOverReason.innerText = "您的總分是：";
                 failIllustration.style.display = 'none'; 
                 successIllustration.style.display = 'block';
-                // 勝利煙火秀在 gameLoop 中渲染背景
             }
         }
 
@@ -1163,21 +1010,18 @@
                      if (boss) boss.draw(ctx);
                      ctx.save();
                      ctx.translate(boyHitbox.x, boyHitbox.y - 60);
-                     ctx.font = "100px Arial"; ctx.textAlign = "center"; ctx.shadowColor = "white"; ctx.shadowBlur = 10;
-                     ctx.fillText("😭", 0, 0);
+                     ctx.font = "100px Arial"; ctx.textAlign = "center"; ctx.shadowColor = "white"; ctx.shadowBlur = 10; ctx.fillText("😭", 0, 0);
                      ctx.font = "24px Arial"; ctx.fillStyle = "red"; ctx.fillText("救命啊！", 0, -50);
                      ctx.restore();
                 } else if (!isBoyCrying) {
                     ctx.clearRect(0, 0, width, height);
                     if (bgLoaded) ctx.drawImage(bgImage, drawParams.x, drawParams.y, drawParams.w, drawParams.h);
-                    
                     if (Math.random() < 0.05 + (score / 50000)) { 
                         const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500'];
                         const color = colors[Math.floor(Math.random() * colors.length)];
                         fireworks.push(new Firework(Math.random() * width, Math.random() * height * 0.6, color));
                         playSound('firework');
                     }
-                    
                     fireworks.forEach(fw => { fw.update(); fw.draw(ctx); });
                     fireworks = fireworks.filter(fw => fw.particles.length > 0);
                 }
@@ -1189,44 +1033,23 @@
             const deltaTime = timestamp - lastTime;
             
             if (deltaTime >= 1000) {
-                timeRemaining--;
-                timerEl.innerText = timeRemaining;
-                lastTime = timestamp;
-
-                if (timeRemaining <= 0) {
-                    endGame(false);
-                }
-
-                if (timeRemaining === 80 && bossWaveIndex === 0) {
-                    triggerNextBoss();
-                }
+                timeRemaining--; timerEl.innerText = timeRemaining; lastTime = timestamp;
+                if (timeRemaining <= 0) { endGame(false); }
+                if (timeRemaining === 80 && bossWaveIndex === 0) { triggerNextBoss(); }
             }
 
-            frameCount++;
-            ctx.clearRect(0, 0, width, height);
-
-            if (bgLoaded) {
-                ctx.drawImage(bgImage, drawParams.x, drawParams.y, drawParams.w, drawParams.h);
-            } else {
-                ctx.fillStyle = "#e0d5c0"; ctx.fillRect(0, 0, width, height); ctx.fillStyle = "black"; ctx.fillText("請載入圖片...", width/2, height/2);
-            }
-
+            frameCount++; ctx.clearRect(0, 0, width, height);
+            if (bgLoaded) { ctx.drawImage(bgImage, drawParams.x, drawParams.y, drawParams.w, drawParams.h); } else { ctx.fillStyle = "#e0d5c0"; ctx.fillRect(0, 0, width, height); ctx.fillStyle = "black"; ctx.fillText("請載入圖片...", width/2, height/2); }
             if (warningActive) {
-                warningTimer--;
-                ctx.fillStyle = `rgba(255, 0, 0, ${0.1 + Math.sin(frameCount * 0.5) * 0.1})`;
-                ctx.fillRect(0, 0, width, height);
+                warningTimer--; ctx.fillStyle = `rgba(255, 0, 0, ${0.1 + Math.sin(frameCount * 0.5) * 0.1})`; ctx.fillRect(0, 0, width, height);
                 ctx.fillStyle = "red"; ctx.font = "bold 48px KaiTi"; ctx.textAlign = "center"; ctx.fillText("危險！龐然大物接近中！", width/2, height/2);
                 if (warningTimer <= 0) { warningActive = false; spawnBoss(); }
             }
-
-            if (isMouseDown && frameCount % 5 === 0) {
-                if (!boss || boss.state !== 'battling') { createSmoke(mouseX, mouseY); }
-            }
+            if (isMouseDown && frameCount % 5 === 0) { if (!boss || boss.state !== 'battling') { createSmoke(mouseX, mouseY); } }
 
             spawnMosquito(); spawnMom(); 
             if (cane) { cane.update(); cane.draw(ctx); }
             if (boss) { boss.update(); if (boss) boss.draw(ctx); }
-
             for (let i = moms.length - 1; i >= 0; i--) { moms[i].update(); moms[i].draw(ctx); if (moms[i].state === 'done') moms.splice(i, 1); }
             for (let i = mosquitoes.length - 1; i >= 0; i--) { mosquitoes[i].update(); mosquitoes[i].draw(ctx); if (mosquitoes[i].markedForDeletion) mosquitoes.splice(i, 1); }
             for (let i = cranes.length - 1; i >= 0; i--) { cranes[i].update(); cranes[i].draw(ctx); if (cranes[i].opacity <= 0) cranes.splice(i, 1); }
@@ -1234,12 +1057,7 @@
             for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); particles[i].draw(ctx); if (particles[i].life <= 0) particles.splice(i, 1); }
 
             if (isBoyCrying) {
-                ctx.save();
-                ctx.translate(boyHitbox.x, boyHitbox.y - 60);
-                ctx.font = "100px Arial"; ctx.textAlign = "center"; ctx.shadowColor = "white"; ctx.shadowBlur = 5;
-                ctx.fillText("😭", 0, 0);
-                ctx.font = "24px Arial"; ctx.fillStyle = "red"; ctx.fillText("救命啊！", 0, -50);
-                ctx.restore();
+                ctx.save(); ctx.translate(boyHitbox.x, boyHitbox.y - 60); ctx.font = "100px Arial"; ctx.textAlign = "center"; ctx.shadowColor = "white"; ctx.shadowBlur = 5; ctx.fillText("😭", 0, 0); ctx.font = "24px Arial"; ctx.fillStyle = "red"; ctx.fillText("救命啊！", 0, -50); ctx.restore();
             }
 
             checkCollisions();
@@ -1250,28 +1068,11 @@
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             startScreen.style.display = 'none';
             resize(); 
-            gameRunning = true;
-            score = 0;
-            scoreEl.innerText = 0;
-            timeRemaining = gameDuration;
-            timerEl.innerText = timeRemaining;
-            lastTime = 0;
+            gameRunning = true; score = 0; scoreEl.innerText = 0; timeRemaining = gameDuration; timerEl.innerText = timeRemaining; lastTime = 0;
+            isBoyCrying = false; mosquitoes.length = 0; smokes.length = 0; cranes.length = 0; particles.length = 0; moms.length = 0; fireworks = []; boss = null; 
+            damageMultiplier = 1; cane = null; bossWaveIndex = 0; warningActive = false;
             
-            isBoyCrying = false;
-            mosquitoes.length = 0; 
-            smokes.length = 0; 
-            cranes.length = 0; 
-            particles.length = 0; 
-            moms.length = 0;
-            fireworks = [];
-            boss = null; 
-            
-            damageMultiplier = 1; 
-            cane = null; 
-
-            bossWaveIndex = 0;
-            warningActive = false;
-            
+            switchBGM('normal'); 
             requestAnimationFrame(gameLoop);
         });
 
